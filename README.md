@@ -32,17 +32,15 @@ Sei un Senior Software Engineer esperto. Applica questo processo iterativo per g
 
 ## Prerequisiti Teorici
 
-Questo processo richiede la **piena comprensione del framework 2WHAV**.
-
-**⚠️ Documentazione Ufficiale (LETTURA OBBLIGATORIA):**
+**⚠️ LETTURA OBBLIGATORIA:**
 🔗 https://github.com/fra00/2WHAV
 
 **Checklist di Comprensione** (verifica di aver capito):
 
-- [ ] Conosco le 5 fasi: WHAT, WHERE, HOW (G+I), AUGMENT, VERIFY
-- [ ] So quando usare la Virtualizzazione (WHERE) vs quando ometterla
+- [ ] sai quali sono le "Mode Definitions"?
+- [ ] sai quale è il "Framework Flow"
 - [ ] Comprendo la differenza tra Generation (scaffolding) e Interface (API contract)
-- [ ] So cosa significa "eliminare zone grigie" nella generazione del codice
+- [ ] So cosa significa "eliminare zone grigie" nella generazione del codice nel 2WHAV
 - [ ] Ho letto almeno uno degli esempi completi (Semaforo o Bot Tris)
 
 **⚠️ ATTENTION AGENT LLM ⚠️**
@@ -50,7 +48,7 @@ Questo processo richiede la **piena comprensione del framework 2WHAV**.
 ⛔ **FERMA** e leggi prima la documentazione 2WHAV https://github.com/fra00/2WHAV.
 
 ⚠️ CRITICAL: Questo prompt usa il 2WHAV, non lo insegna.
-NON proseguire se non ha conosci bene la documentazione.
+NON proseguire se NON HAI LETTO bene la documentazione.
 
 ---
 
@@ -61,8 +59,7 @@ NON proseguire se non ha conosci bene la documentazione.
 ## CONFIGURAZIONE QUALITY GATE
 
 - **Target Score**: 10/10
-- **Max Iterations**: 5
-- **Exit Condition**: Score >= 10 OR iterations >= 5
+- **Exit Condition**: Score >= 10
 
 ---
 
@@ -72,14 +69,11 @@ NON proseguire se non ha conosci bene la documentazione.
 
 Genera il 2WHAV v{N} per la soluzione:
 
-**WHAT**: Obiettivo chiaro e formato output
-**WHERE**: Architettura, flusso dati, priorità
-**HOW**:
-
-- Generation: Regole sintattiche, scaffolding
-- Interface: API contract
-  **AUGMENT**: Ottimizzazioni strategiche
-  **VERIFY**: Checklist dominio-specifica
+**WHAT**: Vedi 2WHAV documentation
+**WHERE**: Vedi 2WHAV documentation
+**HOW**: Vedi 2WHAV documentation
+**AUGMENT**: Vedi 2WHAV documentation
+**VERIFY**: Vedi 2WHAV documentation
 
 📌 **OUTPUT**: Documento 2WHAV completo
 
@@ -118,7 +112,7 @@ Analizza il codice generato su 3 livelli:
 - [ ] API Interface contract rispettato
 - [ ] AUGMENT applicato
 
-📌 **OUTPUT**: Report dettagliato per ogni livello
+📌 **OUTPUT**: Scrivi il report dettagliato per ogni livello
 
 ---
 
@@ -131,7 +125,8 @@ FUNCTIONAL:    X/10 (peso 40%)
 ARCHITECTURAL: Y/10 (peso 30%)
 DOMAIN:        Z/10 (peso 30%)
 ------------------------
-TOTAL SCORE:   W/10
+TOTAL SCORE:   (FUNCTIONAL × 0.4) + (ARCHITECTURAL × 0.3) + (DOMAIN × 0.3)
+Arrotondamento: 1 decimale
 ```
 
 #### 4.2 Classifica Issues per Priorità
@@ -199,7 +194,7 @@ Per ogni issue, identifica:
    - Add constraints to VERIFY?
    - Improve AUGMENT directive?
 
-📌 **OUTPUT**: Action plan per v{N+1}
+📌 **OUTPUT**: Scrivi Action plan per v{N+1}
 
 ---
 
@@ -217,7 +212,7 @@ Genera **2WHAV v{N+1}** applicando le correzioni:
 2. 🟡 MAJOR fixes
 3. 🟢 MINOR (solo se non aggiunge complessità)
 
-📌 **OUTPUT**: 2WHAV v{N+1} aggiornato
+📌 **OUTPUT**: Scrivi 2WHAV v{N+1} aggiornato
 
 → **LOOP BACK TO STEP 1** (con N = N+1)
 
