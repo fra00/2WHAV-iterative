@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drum Machine</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 900px;
+        width: 100%;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .error-toast {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        display: none;
+        box-shadow: 0 5px 15px rgba(235, 51, 73, 0.3);
+      }
+
+      .error-toast.show {
+        display: block;
+      }
+
+      .error-toast h3 {
+        margin-bottom: 8px;
+        font-size: 18px;
+      }
+
+      .error-toast p {
+        font-size: 14px;
+        opacity: 0.95;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      button {
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      button:active:not(:disabled) {
+        transform: translateY(0);
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .btn-play {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+      }
+
+      .btn-stop {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        color: white;
+      }
+
+      .btn-clear {
+        background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+        color: white;
+      }
+
+      .bpm-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #f0f0f0;
+        padding: 10px 20px;
+        border-radius: 8px;
+      }
+
+      .bpm-control label {
+        font-weight: bold;
+        color: #555;
+      }
+
+      .bpm-control input {
+        width: 150px;
+      }
+
+      .bpm-value {
+        font-weight: bold;
+        color: #667eea;
+        min-width: 50px;
+      }
+
+      .sequencer {
+        background: #222;
+        border-radius: 15px;
+        padding: 20px;
+        overflow-x: auto;
+      }
+
+      .track-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 8px;
+        align-items: center;
+      }
+
+      .track-label {
+        min-width: 80px;
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        text-align: right;
+        padding-right: 10px;
+      }
+
+      .track-grid {
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        gap: 4px;
+        flex: 1;
+      }
+
+      .step {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #444;
+        border-radius: 6px;
+        background: #333;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .step:hover {
+        border-color: #666;
+        background: #3a3a3a;
+      }
+
+      .step.active {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border-color: #f5576c;
+      }
+
+      .step.current {
+        box-shadow: 0 0 20px rgba(56, 239, 125, 0.8);
+        border-color: #38ef7d;
+      }
+
+      .step.active.current {
+        box-shadow: 0 0 20px rgba(245, 87, 108, 0.8);
+      }
+
+      .track-0 .step.active {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+      .track-1 .step.active {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+      .track-2 .step.active {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      }
+      .track-3 .step.active {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      }
+      .track-4 .step.active {
+        background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+      }
+      .track-5 .step.active {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      }
+      .track-6 .step.active {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+      }
+      .track-7 .step.active {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      }
+
+      @media (max-width: 768px) {
+        .step {
+          width: 30px;
+          height: 30px;
+        }
+
+        .track-label {
+          min-width: 60px;
+          font-size: 12px;
+        }
+
+        h1 {
+          font-size: 1.8em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🥁 Drum Machine</h1>
+
+      <div class="error-toast" id="errorToast">
+        <h3>⚠️ Audio Not Available</h3>
+        <p id="errorMessage"></p>
+      </div>
+
+      <div class="controls">
+        <button class="btn-play" id="playBtn">▶ Play</button>
+        <button class="btn-stop" id="stopBtn">■ Stop</button>
+        <button class="btn-clear" id="clearBtn">Clear</button>
+
+        <div class="bpm-control">
+          <label for="bpmSlider">BPM:</label>
+          <input type="range" id="bpmSlider" min="60" max="180" value="120" />
+          <span class="bpm-value" id="bpmValue">120</span>
+        </div>
+      </div>
+
+      <div class="sequencer" id="sequencer"></div>
+    </div>
+
+    <script>
+      // Constants
+      const GRID_STEPS = 16;
+      const TRACK_NAMES = [
+        "Kick",
+        "Snare",
+        "Hi-Hat",
+        "Tom 1",
+        "Tom 2",
+        "Clap",
+        "Rim",
+        "Cowbell",
+      ];
+      const DEFAULT_BPM = 120;
+      const MIN_BPM = 60;
+      const MAX_BPM = 180;
+      const LOOKAHEAD = 25; // ms
+      const SCHEDULE_AHEAD_TIME = 0.1; // seconds
+
+      class DrumMachine {
+        constructor() {
+          this.audioContext = null;
+          this.isPlaying = false;
+          this.currentStep = 0;
+          this.bpm = DEFAULT_BPM;
+          this.pattern = Array(TRACK_NAMES.length)
+            .fill(null)
+            .map(() => Array(GRID_STEPS).fill(false));
+          this.nextNoteTime = 0;
+          this.timerId = null;
+          this.stepElements = []; // Cache per performance
+          this.audioSupported = true;
+
+          try {
+            this.checkAudioSupport();
+            this.init();
+          } catch (e) {
+            this.handleAudioError(e.message);
+          }
+        }
+
+        checkAudioSupport() {
+          if (!window.AudioContext && !window.webkitAudioContext) {
+            throw new Error(
+              "Web Audio API is not supported in your browser. Please use a modern browser like Chrome, Firefox, or Safari."
+            );
+          }
+        }
+
+        handleAudioError(message) {
+          this.audioSupported = false;
+          this.showErrorMessage(message);
+          this.disableControls();
+          // Still render grid for visual interaction
+          this.renderGrid();
+          this.attachEventListeners();
+        }
+
+        showErrorMessage(message) {
+          const toast = document.getElementById("errorToast");
+          const messageEl = document.getElementById("errorMessage");
+          messageEl.textContent = message;
+          toast.classList.add("show");
+        }
+
+        disableControls() {
+          document.getElementById("playBtn").disabled = true;
+          document.getElementById("stopBtn").disabled = true;
+        }
+
+        init() {
+          this.renderGrid();
+          this.attachEventListeners();
+        }
+
+        initAudioContext() {
+          if (!this.audioContext && this.audioSupported) {
+            try {
+              this.audioContext = new (window.AudioContext ||
+                window.webkitAudioContext)();
+
+              // Resume context if suspended (mobile)
+              if (this.audioContext.state === "suspended") {
+                this.audioContext.resume();
+              }
+            } catch (e) {
+              console.error("Failed to initialize AudioContext:", e);
+              this.handleAudioError(
+                "Could not initialize audio system. Please check your browser permissions."
+              );
+              throw e;
+            }
+          }
+        }
+
+        renderGrid() {
+          const sequencer = document.getElementById("sequencer");
+          sequencer.innerHTML = "";
+
+          for (let track = 0; track < TRACK_NAMES.length; track++) {
+            const trackContainer = document.createElement("div");
+            trackContainer.className = "track-container";
+
+            const trackLabel = document.createElement("div");
+            trackLabel.className = "track-label";
+            trackLabel.textContent = TRACK_NAMES[track];
+            trackContainer.appendChild(trackLabel);
+
+            const trackGrid = document.createElement("div");
+            trackGrid.className = `track-grid track-${track}`;
+
+            for (let step = 0; step < GRID_STEPS; step++) {
+              const stepButton = document.createElement("button");
+              stepButton.className = "step";
+              stepButton.dataset.track = track;
+              stepButton.dataset.step = step;
+              trackGrid.appendChild(stepButton);
+
+              // Cache element reference
+              if (!this.stepElements[step]) {
+                this.stepElements[step] = [];
+              }
+              this.stepElements[step].push(stepButton);
+            }
+
+            trackContainer.appendChild(trackGrid);
+            sequencer.appendChild(trackContainer);
+          }
+        }
+
+        attachEventListeners() {
+          document
+            .getElementById("sequencer")
+            .addEventListener("click", (e) => {
+              if (e.target.classList.contains("step")) {
+                const track = parseInt(e.target.dataset.track);
+                const step = parseInt(e.target.dataset.step);
+                this.toggleStep(track, step);
+              }
+            });
+
+          document
+            .getElementById("playBtn")
+            .addEventListener("click", () => this.play());
+          document
+            .getElementById("stopBtn")
+            .addEventListener("click", () => this.stop());
+          document
+            .getElementById("clearBtn")
+            .addEventListener("click", () => this.clear());
+
+          const bpmSlider = document.getElementById("bpmSlider");
+          bpmSlider.addEventListener("input", (e) => {
+            this.setBPM(parseInt(e.target.value));
+          });
+        }
+
+        toggleStep(track, step) {
+          this.pattern[track][step] = !this.pattern[track][step];
+          this.updateStepVisual(track, step);
+        }
+
+        updateStepVisual(track, step) {
+          const stepElement = document.querySelector(
+            `[data-track="${track}"][data-step="${step}"]`
+          );
+          if (stepElement) {
+            stepElement.classList.toggle("active", this.pattern[track][step]);
+          }
+        }
+
+        play() {
+          if (this.isPlaying || !this.audioSupported) return;
+
+          try {
+            this.initAudioContext();
+            this.isPlaying = true;
+            this.currentStep = 0;
+            this.nextNoteTime = this.audioContext.currentTime;
+            this.scheduler();
+          } catch (e) {
+            console.error("Failed to start playback:", e);
+            this.isPlaying = false;
+          }
+        }
+
+        stop() {
+          if (!this.isPlaying) return;
+
+          this.isPlaying = false;
+
+          if (this.timerId) {
+            clearTimeout(this.timerId);
+            this.timerId = null;
+          }
+
+          this.clearVisualFeedback();
+        }
+
+        scheduler() {
+          // Web Audio API precise scheduling
+          while (
+            this.nextNoteTime <
+            this.audioContext.currentTime + SCHEDULE_AHEAD_TIME
+          ) {
+            this.scheduleNote(this.nextNoteTime);
+            this.nextNoteTime += 60.0 / this.bpm / 4; // 16th note
+          }
+
+          if (this.isPlaying) {
+            this.timerId = setTimeout(() => this.scheduler(), LOOKAHEAD);
+          }
+        }
+
+        scheduleNote(time) {
+          // Schedule audio for current step
+          for (let track = 0; track < TRACK_NAMES.length; track++) {
+            if (this.pattern[track][this.currentStep]) {
+              this.playSound(track, time);
+            }
+          }
+
+          // Schedule visual feedback slightly before audio
+          const visualDelay = (time - this.audioContext.currentTime) * 1000;
+          setTimeout(() => {
+            if (this.isPlaying) {
+              this.updateVisualFeedback(this.currentStep);
+            }
+          }, visualDelay);
+
+          // Advance step
+          this.currentStep = (this.currentStep + 1) % GRID_STEPS;
+        }
+
+        updateVisualFeedback(step) {
+          // Clear previous highlights
+          document.querySelectorAll(".step.current").forEach((el) => {
+            el.classList.remove("current");
+          });
+
+          // Add current step highlight using cached elements
+          if (this.stepElements[step]) {
+            this.stepElements[step].forEach((el) => {
+              el.classList.add("current");
+            });
+          }
+        }
+
+        clearVisualFeedback() {
+          document.querySelectorAll(".step.current").forEach((el) => {
+            el.classList.remove("current");
+          });
+        }
+
+        playSound(trackIndex, time) {
+          if (!this.audioContext) return;
+
+          try {
+            const osc = this.audioContext.createOscillator();
+            const gain = this.audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(this.audioContext.destination);
+
+            // Sound synthesis per track
+            switch (trackIndex) {
+              case 0: // Kick
+                osc.frequency.setValueAtTime(150, time);
+                osc.frequency.exponentialRampToValueAtTime(40, time + 0.5);
+                gain.gain.setValueAtTime(1, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
+                break;
+              case 1: // Snare
+                osc.type = "triangle";
+                osc.frequency.setValueAtTime(200, time);
+                gain.gain.setValueAtTime(0.7, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+                break;
+              case 2: // Hi-Hat
+                osc.type = "square";
+                osc.frequency.setValueAtTime(8000, time);
+                gain.gain.setValueAtTime(0.3, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+                break;
+              case 3: // Tom 1
+                osc.frequency.setValueAtTime(220, time);
+                osc.frequency.exponentialRampToValueAtTime(60, time + 0.3);
+                gain.gain.setValueAtTime(0.8, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
+                break;
+              case 4: // Tom 2
+                osc.frequency.setValueAtTime(180, time);
+                osc.frequency.exponentialRampToValueAtTime(50, time + 0.3);
+                gain.gain.setValueAtTime(0.8, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
+                break;
+              case 5: // Clap
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(400, time);
+                gain.gain.setValueAtTime(0.5, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+                break;
+              case 6: // Rim
+                osc.type = "triangle";
+                osc.frequency.setValueAtTime(800, time);
+                gain.gain.setValueAtTime(0.4, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.08);
+                break;
+              case 7: // Cowbell
+                osc.type = "square";
+                osc.frequency.setValueAtTime(800, time);
+                gain.gain.setValueAtTime(0.5, time);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
+                break;
+            }
+
+            osc.start(time);
+            osc.stop(time + 0.5);
+          } catch (e) {
+            console.error("Error playing sound:", e);
+          }
+        }
+
+        setBPM(bpm) {
+          this.bpm = Math.max(MIN_BPM, Math.min(MAX_BPM, bpm));
+          document.getElementById("bpmValue").textContent = this.bpm;
+          // Scheduler automatically adapts to new BPM
+        }
+
+        clear() {
+          this.pattern = Array(TRACK_NAMES.length)
+            .fill(null)
+            .map(() => Array(GRID_STEPS).fill(false));
+
+          document.querySelectorAll(".step").forEach((el) => {
+            el.classList.remove("active");
+          });
+        }
+      }
+
+      // Initialize
+      const drumMachine = new DrumMachine();
+    </script>
+  </body>
+</html>

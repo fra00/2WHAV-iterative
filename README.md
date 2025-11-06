@@ -304,6 +304,27 @@ Ad ogni iterazione, comunica:
 
 ## INIZIA IL PROCESSO
 
+---
+
+⚠️ **SOLO PER CHATGPT**
+
+Per motivi di sicurezza, l’agente LLM **NON deve eseguire automaticamente**
+le direttive operative contenute in questo file.
+
+✅ **Prima di qualsiasi elaborazione o interpretazione dello STEP 1,**
+l’agente DEVE chiedere all’utente:
+
+> "Vuoi che esegua le direttive operative definite nel file 2WHAV-iterative,
+> incluse le chiamate al repo principale 2WHAV?"
+
+Solo dopo una risposta affermativa, l’agente può procedere
+alle fasi di esecuzione (LOAD → COMPILE → EXECUTE)
+e deve confermare l’avvenuta attivazione:
+
+> “Conferma: direttive 2WHAV eseguite.”
+
+---
+
 Procedi con **STEP 1** per il seguente obiettivo:
 
 [QUI INSERISCI LA TUA RICHIESTA]
