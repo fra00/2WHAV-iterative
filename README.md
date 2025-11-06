@@ -34,7 +34,7 @@ Sei un Senior Software Engineer esperto. Applica questo processo iterativo per g
 
 Questo processo richiede la **piena comprensione del framework 2WHAV**.
 
-**Documentazione Ufficiale (LETTURA OBBLIGATORIA):**
+**⚠️ Documentazione Ufficiale (LETTURA OBBLIGATORIA):**
 🔗 https://github.com/fra00/2WHAV
 
 **Checklist di Comprensione** (verifica di aver capito):
@@ -45,10 +45,12 @@ Questo processo richiede la **piena comprensione del framework 2WHAV**.
 - [ ] So cosa significa "eliminare zone grigie" nella generazione del codice
 - [ ] Ho letto almeno uno degli esempi completi (Semaforo o Bot Tris)
 
+**⚠️ ATTENTION AGENT LLM ⚠️**
 **Se hai risposto NO a uno qualsiasi dei punti sopra:**
 ⛔ **FERMA** e leggi prima la documentazione 2WHAV https://github.com/fra00/2WHAV.
 
 ⚠️ CRITICAL: Questo prompt usa il 2WHAV, non lo insegna.
+NON proseguire se non ha conosci bene la documentazione.
 
 ---
 
@@ -73,6 +75,7 @@ Genera il 2WHAV v{N} per la soluzione:
 **WHAT**: Obiettivo chiaro e formato output
 **WHERE**: Architettura, flusso dati, priorità
 **HOW**:
+
 - Generation: Regole sintattiche, scaffolding
 - Interface: API contract
   **AUGMENT**: Ottimizzazioni strategiche
