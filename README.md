@@ -153,9 +153,13 @@ Per ogni check fallito, assegna categoria:
 
 📌 **OUTPUT**: Scrivi lo Score + lista issues classificate
 
-#### 4.3 ✅ HUMAN CONFIRMATION GATE (Pre-Gate Check)
+---
 
-Prima di procedere con STEP 5 (Gate Decision)
+### STEP 5: Gate Decision
+
+#### ✅ 5.1 HUMAN CONFIRMATION GATE (Pre-Gate Check)
+
+Prima di procedere con STEP 5.2 (Gate Decision)
 
 #### Procedura:
 
@@ -173,15 +177,13 @@ Prima di procedere con STEP 5 (Gate Decision)
      - validazione funzionale in ambiente reale.
 
 3. **Dopo la validazione**:
-   - Se l’umano conferma che tutto è OK → assegna e conferma → continua con STEP 5 (Gate Decision).
+   - Se l’umano conferma che tutto è OK → assegna e conferma → continua con STEP 5.2 (Gate Decision).
    - Se l’umano segnala problemi → registra issue (🔴 o 🟡) → torna a STEP 6 (Root Cause Analysis).
 
 📌 **Scopo di questo gate:**
 Garantendo che lo stato “production-ready” sia **validato in modo verificabile** e condiviso tra LLM e umano.
 
----
-
-### STEP 5: Gate Decision
+#### ✅ 5.2 LLM CONFIRMATION GATE (Pre-Gate Check)
 
 ```
 IF score >= 10:
