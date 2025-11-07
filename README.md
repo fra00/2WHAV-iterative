@@ -43,12 +43,12 @@ Sei un Senior Software Engineer esperto. Applica questo processo iterativo per g
 - [ ] So cosa significa "eliminare zone grigie" nella generazione del codice nel 2WHAV
 - [ ] Ho letto almeno uno degli esempi completi (Semaforo o Bot Tris)
 
-**⚠️ ATTENTION AGENT LLM ⚠️**
+**⚠️ ATTENTION LLM ⚠️**
 **Se hai risposto NO a uno qualsiasi dei punti sopra:**
 ⛔ **FERMA** e leggi prima la documentazione 2WHAV https://github.com/fra00/2WHAV.
 
 ⚠️ CRITICAL: Questo prompt usa il 2WHAV, non lo insegna.
-NON proseguire se NON HAI LETTO bene la documentazione.
+NON proseguire se NON HAI LETTO la documentazione.
 
 ---
 
@@ -151,7 +151,33 @@ Per ogni check fallito, assegna categoria:
 - Codice migliorabile ma funzionante
 - AUGMENT non completamente implementato
 
-📌 **OUTPUT**: Score + lista issues classificate
+📌 **OUTPUT**: Scrivi lo Score + lista issues classificate
+
+#### 4.3 ✅ HUMAN CONFIRMATION GATE (Pre-Gate Check)
+
+Prima di procedere con STEP 5 (Gate Decision)
+
+#### Procedura:
+
+1. **Attendi conferma esplicita dal supervisore umano**:
+
+   - Messaggio tipo:
+     `"Posso procedere con il prossimo STEP o vuoi eseguire un test/manual check?"`
+
+2. **Se l’umano richiede un controllo o un test manuale**:
+
+   - L’agente **sospende il flusso** e attende il risultato del test umano.
+   - L’umano può eseguire:
+     - test manuale o strumentale,
+     - ispezione visiva,
+     - validazione funzionale in ambiente reale.
+
+3. **Dopo la validazione**:
+   - Se l’umano conferma che tutto è OK → assegna e conferma → continua con STEP 5 (Gate Decision).
+   - Se l’umano segnala problemi → registra issue (🔴 o 🟡) → torna a STEP 6 (Root Cause Analysis).
+
+📌 **Scopo di questo gate:**
+Garantendo che lo stato “production-ready” sia **validato in modo verificabile** e condiviso tra LLM e umano.
 
 ---
 
