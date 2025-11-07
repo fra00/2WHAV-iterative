@@ -124,6 +124,9 @@ graph TD
 
 ### Overview: 8-Step Process
 
+⚠️ **CRITICAL:**
+This flow MUST be followed to the letter and is intentionally rigid precisely to stimulate the LLM's reasoning, not to speed up by ignoring steps.
+
 ```
 ┌─────────────────────────────────────────┐
 │ STEP 1: Design (2WHAV Planning)        │
