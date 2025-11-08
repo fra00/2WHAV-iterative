@@ -1,5 +1,17 @@
 # 2WHAV Iterative Framework
 
+### For Agent LLMs with Tool Access
+
+**⚠️ IF you have tool access** (file system, shell execution):
+
+1. **STOP reading this file**
+2. Your instructions are in file: `llm-agent.md`
+3. Read and internalize `llm-agent.md` as primary operational process
+
+**IF you DO NOT have tool access:** Proceed with instructions in this document.
+
+---
+
 > Quality-Driven Code Generation with Iterative Refinement
 
 ## Table of Contents
@@ -930,37 +942,6 @@ TOTAL SCORE: {TOTAL}/10
 
 ---
 
-## When to Use
-
-### ✅ USE 2WHAV Iterative IF:
-
-| Condition                        | Rationale                            |
-| -------------------------------- | ------------------------------------ |
-| Complex code generation required | Multiple components, intricate logic |
-| Quality must be verified         | Production deployment                |
-| Iterative refinement acceptable  | Time budget allows 2-5 cycles        |
-| Clear success criteria exist     | Can define score >= 10               |
-| 2WHAV framework understood       | Team knows base methodology          |
-
-### ❌ DON'T USE IF:
-
-| Condition                | Alternative                    |
-| ------------------------ | ------------------------------ |
-| Simple, one-off script   | Use standard 2WHAV single-pass |
-| Prototype/throwaway code | Direct implementation          |
-| No quality gate needed   | Manual review sufficient       |
-| Unclear requirements     | Clarify specs first            |
-| 2WHAV not learned        | Read base framework first      |
-
-### ⚠️ CONSIDER ALTERNATIVES IF:
-
-| Scenario                      | Alternative Approach               |
-| ----------------------------- | ---------------------------------- |
-| Only need code review         | Use STEP 3 (Analysis) standalone   |
-| Have existing code to improve | Use Root Cause Analysis (STEP 6)   |
-| Want to test 2WHAV quality    | Use STEP 4 (Scoring) as audit tool |
-
----
 
 ## Case Study: JWT Authentication System
 
@@ -1077,18 +1058,6 @@ For security reasons, the LLM agent **MUST NOT automatically execute** operation
 **Only after affirmative response** can the agent proceed to execution phases (LOAD → COMPILE → EXECUTE) and must confirm activation:
 
 > "Confirmation: 2WHAV directives executed."
-
----
-
-### For Agent LLMs with Tool Access
-
-**⚠️ IF you have tool access** (file system, shell execution):
-
-1. **STOP reading this file**
-2. Your instructions are in file: `llm-agent.md`
-3. Read and internalize `llm-agent.md` as primary operational process
-
-**IF you DO NOT have tool access:** Proceed with instructions in this document.
 
 ---
 
