@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Runner - Versione Firefox</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            border: 2px solid #333;
+            background-color: white;
+            position: relative;
+            overflow: hidden; /* Nasconde gli ostacoli prima che entrino nel campo visivo */
+        }
+        #dino {
+            width: 30px;
+            height: 40px;
+            background-color: #1e88e5; /* Blu, come il logo Firefox */
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+        }
+        .obstacle {
+            width: 20px;
+            height: 40px;
+            background-color: #e53935; /* Arancione/Rosso, come il logo Firefox */
+            position: absolute;
+            bottom: 0;
+        }
+        #score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            color: #e53935;
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="dino"></div>
+    <div id="score">Score: 0</div>
+    <div id="game-over">GAME OVER<br>Clicca per Rigiocare</div>
+</div>
+
+<script>
+    const gameContainer = document.getElementById('game-container');
+    const dino = document.getElementById('dino');
+    const scoreDisplay = document.getElementById('score');
+    const gameOverDisplay = document.getElementById('game-over');
+
+    // Impostazioni del gioco
+    const GAME_WIDTH = 600;
+    const GAME_HEIGHT = 150;
+    const DINO_JUMP_HEIGHT = 90;
+    const GRAVITY = 0.6;
+    const OBSTACLE_SPEED = 3;
+    const OBSTACLE_SPAWN_RATE = 2000; // ms
+
+    // Variabili di stato
+    let isJumping = false;
+    let dinoBottom = 0;
+    let velocityY = 0;
+    let gameLoop;
+    let obstacleTimer;
+    let score = 0;
+    let isGameOver = true;
+    let obstacles = [];
+
+    // Configura il container
+    gameContainer.style.width = `${GAME_WIDTH}px`;
+    gameContainer.style.height = `${GAME_HEIGHT}px`;
+
+    // Funzione per il salto
+    function jump() {
+        if (!isJumping) {
+            isJumping = true;
+            velocityY = -15; // Forza iniziale del salto
+        }
+    }
+
+    // Funzione di gestione degli ostacoli
+    function createObstacle() {
+        const obstacle = document.createElement('div');
+        obstacle.classList.add('obstacle');
+        obstacle.style.left = `${GAME_WIDTH}px`; // Inizia fuori dal bordo destro
+        gameContainer.appendChild(obstacle);
+        obstacles.push(obstacle);
+    }
+
+    // Funzione principale del gioco (Game Loop)
+    function gameUpdate() {
+        if (isGameOver) return;
+
+        // 1. Aggiornamento del Dinosauro (Salto)
+        velocityY += GRAVITY;
+        dinoBottom -= velocityY;
+
+        if (dinoBottom < 0) {
+            dinoBottom = 0;
+            isJumping = false;
+            velocityY = 0;
+        }
+        dino.style.bottom = `${dinoBottom}px`;
+
+        // 2. Movimento e gestione degli Ostacoli
+        for (let i = obstacles.length - 1; i >= 0; i--) {
+            const obstacle = obstacles[i];
+            let currentLeft = parseInt(obstacle.style.left);
+            
+            currentLeft -= OBSTACLE_SPEED;
+            obstacle.style.left = `${currentLeft}px`;
+
+            // Rimuovi gli ostacoli fuori dallo schermo
+            if (currentLeft + parseInt(obstacle.style.width) < 0) {
+                gameContainer.removeChild(obstacle);
+                obstacles.splice(i, 1);
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+            }
+
+            // 3. Controllo Collisioni (semplificato)
+            const dinoRect = dino.getBoundingClientRect();
+            const obstacleRect = obstacle.getBoundingClientRect();
+
+            // Semplificazione: controllo basato sulla posizione relativa nel container
+            const dinoX = parseInt(dino.style.left);
+            const dinoY = parseInt(dino.style.bottom);
+            const dinoWidth = parseInt(dino.style.width);
+            const dinoHeight = parseInt(dino.style.height);
+
+            const obstacleX = parseInt(obstacle.style.left);
+            const obstacleY = parseInt(obstacle.style.bottom); // Sarà 0
+            const obstacleWidth = parseInt(obstacle.style.width);
+            const obstacleHeight = parseInt(obstacle.style.height);
+
+            const collision = (
+                dinoX < obstacleX + obstacleWidth &&
+                dinoX + dinoWidth > obstacleX &&
+                dinoY < obstacleY + obstacleHeight &&
+                dinoY + dinoHeight > obstacleY
+            );
+
+            if (collision) {
+                gameOver();
+                return;
+            }
+        }
+
+        // 4. Loop di animazione
+        gameLoop = requestAnimationFrame(gameUpdate);
+    }
+
+    // Funzione di Game Over
+    function gameOver() {
+        isGameOver = true;
+        cancelAnimationFrame(gameLoop);
+        clearInterval(obstacleTimer);
+        gameOverDisplay.style.display = 'block';
+    }
+
+    // Funzione per avviare una nuova partita
+    function startGame() {
+        // Pulisci
+        obstacles.forEach(o => gameContainer.removeChild(o));
+        obstacles = [];
+        score = 0;
+        scoreDisplay.textContent = `Score: 0`;
+        gameOverDisplay.style.display = 'none';
+        isGameOver = false;
+        isJumping = false;
+        dinoBottom = 0;
+        dino.style.bottom = '0px';
+
+        // Avvia
+        gameLoop = requestAnimationFrame(gameUpdate);
+        obstacleTimer = setInterval(createObstacle, OBSTACLE_SPAWN_RATE);
+    }
+
+    // Listener per i controlli
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' || e.code === 'ArrowUp') {
+            if (isGameOver) {
+                startGame();
+            } else {
+                jump();
+            }
+        }
+    });
+
+    // Listener per riavviare con il click
+    gameOverDisplay.addEventListener('click', startGame);
+
+    // Avvia il gioco all'inizio (mostra subito la schermata iniziale o avvia)
+    startGame();
+</script>
+
+</body>
+</html>

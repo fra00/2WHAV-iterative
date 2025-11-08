@@ -161,13 +161,13 @@ This flow MUST be followed to the letter and is intentionally rigid precisely to
 
 #### 2WHAV Structure
 
-| Section     | Purpose                            | Must Include                      |
-| ----------- | ---------------------------------- | --------------------------------- |
-| **WHAT**    | Define objective and output format | Clear deliverable definition      |
-| **WHERE**   | Architecture and priorities        | Component structure, dependencies |
-| **HOW**     | Syntax rules and API contracts     | Language-specific rules, patterns |
-| **AUGMENT** | Advanced optimizations             | Performance, caching, retry logic |
-| **VERIFY**  | Compliance checklist               | Success criteria, edge cases      |
+| Section     | Purpose                            | Must Include                                                                                                 |
+| ----------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **WHAT**    | Define objective and output format | Clear deliverable definition                                                                                 |
+| **WHERE**   | Architecture and priorities        | Component structure, dependencies                                                                            |
+| **HOW**     | Syntax rules and API contracts     | Language-specific rules, patterns                                                                            |
+| **AUGMENT** | Propose strategic enhancements     | Proposals based on strategic goals from the objective (e.g., 'fast', 'secure'). Refined in later iterations. |
+| **VERIFY**  | Compliance checklist               | Success criteria, edge cases                                                                                 |
 
 **Example:**
 
@@ -234,6 +234,17 @@ This flow MUST be followed to the letter and is intentionally rigid precisely to
 **Purpose:** Evaluate generated code across 3 quality dimensions
 
 #### 3.1 FUNCTIONAL Analysis (Correctness)
+
+## Directive: Deep Logical Verification
+
+**Logical Flow Simulation:**
+Mentally simulate the code's execution. Identify any potential logical fallacies, race conditions, or incorrect state management, documenting your thought process.
+**Multi-Persona Test Design:**
+Devise a series of conceptual tests from different perspectives:
+
+- As a Developer (Unit/Integration Tests): Think about how you would test individual functions and their interactions
+- As a QA Engineer (System/E2E Tests): Think about the system as a whole.
+- As an Adversary (Security/Penetration Tests): Think about how you could break the code.
 
 **Checklist:**
 

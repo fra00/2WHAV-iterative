@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2WHAV Dino Runner - Final v2</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f7f7f7;
+            font-family: monospace;
+            overflow: hidden; 
+        }
+        canvas {
+            border: 2px solid #333;
+            background-color: #ffffff;
+        }
+        #game-over-message {
+            position: absolute;
+            font-size: 32px;
+            color: #535353;
+            cursor: pointer;
+            visibility: hidden;
+            text-align: center;
+            user-select: none;
+        }
+        #high-score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 14px;
+            color: #535353;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="gameCanvas" width="600" height="150"></canvas>
+    <div id="game-over-message">GAME OVER<br>Press SPACE to Restart</div>
+    <div id="high-score">HI: 00000</div>
+
+    <script>
+        // === CORE GAME ENGINE (V2) ===
+        class GameEngine {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+                this.isGameOver = false;
+                this.score = 0;
+                this.gameSpeed = 5; 
+                this.maxGameSpeed = 12;
+                this.speedIncreaseRate = 0.0005; 
+                this.lastTime = 0;
+                this.deltaTime = 0;
+                this.spawnTimer = 0;
+                this.minSpawnTime = 800;
+                this.maxSpawnTime = 2000;
+                this.lastSpawnTime = 0;
+                this.highScore = localStorage.getItem('dinoHighScore') || 0;
+                this.raf = null; // Reference to requestAnimationFrame
+
+                this.dino = new Dino(this.ctx);
+                this.obstacles = [];
+                this.ground = new Ground(this.ctx, this.width, this.height);
+                
+                document.addEventListener('keydown', this.handleInput.bind(this));
+                document.getElementById('game-over-message').addEventListener('click', this.restartGame.bind(this));
+
+                this.updateHighScoreDisplay();
+                this.loop(0);
+            }
+
+            handleInput(e) {
+                if (e.code === 'Space' || e.code === 'ArrowUp') {
+                    e.preventDefault();
+                    if (this.isGameOver) {
+                        this.restartGame();
+                    } else if (this.dino.onGround) {
+                        this.dino.jump();
+                    }
+                }
+            }
+
+            restartGame() {
+                if (!this.isGameOver) return;
+                this.isGameOver = false;
+                this.score = 0;
+                this.gameSpeed = 5;
+                this.obstacles = [];
+                this.dino.reset();
+                document.getElementById('game-over-message').style.visibility = 'hidden';
+                this.loop(0);
+            }
+
+            updateScore(dt) {
+                this.score += dt * 0.01 * this.gameSpeed; 
+                this.gameSpeed = Math.min(this.maxGameSpeed, this.gameSpeed + this.speedIncreaseRate * dt); 
+                
+                if (this.score > this.highScore) {
+                    this.highScore = Math.floor(this.score);
+                    localStorage.setItem('dinoHighScore', this.highScore);
+                }
+                this.updateHighScoreDisplay();
+            }
+
+            updateHighScoreDisplay() {
+                const displayScore = Math.floor(this.score).toString().padStart(5, '0');
+                const displayHighScore = Math.floor(this.highScore).toString().padStart(5, '0');
+                document.getElementById('high-score').innerText = `HI: ${displayHighScore} ${displayScore}`;
+            }
+
+            spawnObstacle() {
+                const now = Date.now();
+                if (now - this.lastSpawnTime > this.spawnTimer) {
+                    this.obstacles.push(new Obstacle(this.ctx, this.width, this.gameSpeed));
+                    this.spawnTimer = Math.random() * (this.maxSpawnTime - this.minSpawnTime) + this.minSpawnTime;
+                    this.lastSpawnTime = now;
+                }
+            }
+
+            checkCollisions() {
+                for (let i = 0; i < this.obstacles.length; i++) {
+                    const o = this.obstacles[i];
+                    // Simple Bounding Box Collision
+                    if (
+                        this.dino.x < o.x + o.width &&
+                        this.dino.x + this.dino.width > o.x &&
+                        this.dino.y + this.dino.height > o.y
+                    ) {
+                        this.isGameOver = true;
+                        document.getElementById('game-over-message').style.visibility = 'visible';
+                        return;
+                    }
+                }
+            }
+
+            update(dt) {
+                this.ground.update(this.gameSpeed, dt);
+                this.dino.update(dt);
+                this.updateScore(dt);
+                this.spawnObstacle();
+                this.checkCollisions();
+
+                this.obstacles = this.obstacles.filter(o => {
+                    o.update(this.gameSpeed, dt);
+                    return o.x + o.width > 0;
+                });
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                this.ground.draw(); 
+                
+                this.obstacles.forEach(o => o.draw());
+                
+                this.dino.draw();
+            }
+
+            // MODIFIED LOOP METHOD (V2)
+            loop(timestamp) {
+                if (this.isGameOver) {
+                    cancelAnimationFrame(this.raf);
+                    return;
+                }
+
+                try {
+                    this.deltaTime = timestamp - this.lastTime;
+                    this.lastTime = timestamp;
+
+                    if (this.deltaTime > 100) this.deltaTime = 100;
+
+                    this.update(this.deltaTime);
+                    this.draw();
+                } catch (error) {
+                    // Critical Error Handling added in Iteration 2
+                    console.error("Game Loop Critical Error:", error);
+                    alert("A critical error occurred. Game stopped. Check the console for details.");
+                    this.isGameOver = true;
+                    cancelAnimationFrame(this.raf); 
+                    return; 
+                }
+
+                this.raf = requestAnimationFrame(this.loop.bind(this));
+            }
+        }
+
+        // === DINO CLASS ===
+        class Dino {
+            constructor(ctx) {
+                this.ctx = ctx;
+                this.width = 20;
+                this.height = 40;
+                this.x = 20;
+                this.baseY = ctx.canvas.height - this.height - 5;
+                this.y = this.baseY;
+                this.velocityY = 0;
+                this.onGround = true;
+                this.gravity = 0.0015;
+                this.jumpVelocity = -0.55;
+
+                this.runFrames = [20, 40]; 
+                this.currentFrame = 0;
+                this.animationTimer = 0;
+                this.animationSpeed = 100; 
+            }
+
+            reset() {
+                this.y = this.baseY;
+                this.velocityY = 0;
+                this.onGround = true;
+            }
+
+            jump() {
+                if (this.onGround) {
+                    this.velocityY = this.jumpVelocity;
+                    this.onGround = false;
+                }
+            }
+
+            update(dt) {
+                if (!this.onGround) {
+                    this.velocityY += this.gravity * dt;
+                    this.y += this.velocityY * dt;
+                }
+
+                if (this.y >= this.baseY) {
+                    this.y = this.baseY;
+                    this.velocityY = 0;
+                    this.onGround = true;
+                }
+
+                this.animationTimer += dt;
+                if (this.animationTimer >= this.animationSpeed && this.onGround) {
+                    this.currentFrame = (this.currentFrame + 1) % this.runFrames.length;
+                    this.animationTimer = 0;
+                }
+            }
+
+            draw() {
+                this.ctx.fillStyle = this.onGround ? 'green' : 'red';
+                this.ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                this.ctx.fillStyle = 'white';
+                if (this.onGround) {
+                    this.ctx.fillRect(this.x + 5, this.y + this.runFrames[this.currentFrame] - 10, 10, 5);
+                }
+            }
+        }
+
+        // === OBSTACLE CLASS (Cactus) ===
+        class Obstacle {
+            constructor(ctx, gameWidth, gameSpeed) {
+                this.ctx = ctx;
+                this.width = 10 + Math.random() * 10; 
+                this.height = 20 + Math.random() * 20; 
+                this.x = gameWidth;
+                this.y = ctx.canvas.height - this.height - 5;
+                this.color = 'brown';
+            }
+
+            update(gameSpeed, dt) {
+                this.x -= gameSpeed * dt * 0.06; 
+            }
+
+            draw() {
+                this.ctx.fillStyle = this.color;
+                this.ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+
+        // === GROUND CLASS ===
+        class Ground {
+            constructor(ctx, width, height) {
+                this.ctx = ctx;
+                this.height = height;
+                this.lineY = height - 5;
+                this.lineWidth = 2;
+                this.lineColor = '#535353';
+                this.segmentLength = 10; 
+                this.segmentGap = 5;
+                this.xOffset = 0;
+            }
+
+            update(gameSpeed, dt) {
+                this.xOffset = (this.xOffset + gameSpeed * dt * 0.06) % (this.segmentLength + this.segmentGap);
+            }
+
+            draw() {
+                this.ctx.strokeStyle = this.lineColor;
+                this.ctx.lineWidth = this.lineWidth;
+
+                this.ctx.beginPath();
+                
+                for (let x = -this.xOffset; x < this.ctx.canvas.width; x += (this.segmentLength + this.segmentGap)) {
+                    this.ctx.moveTo(x, this.lineY);
+                    this.ctx.lineTo(x + this.segmentLength, this.lineY);
+                }
+                
+                this.ctx.stroke();
+            }
+        }
+
+        // Start the game
+        const game = new GameEngine('gameCanvas');
+    </script>
+</body>
+</html>
