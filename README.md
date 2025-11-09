@@ -139,6 +139,9 @@ graph TD
 ⚠️ **CRITICAL:**
 This flow MUST be followed to the letter and is intentionally rigid precisely to stimulate the LLM's reasoning, not to speed up by ignoring steps.
 
+⚠️ **CRITICAL:**
+Each step must be exposed for human verification. Ignoring this is considered a CRITICAL ERROR
+
 ```
 ┌─────────────────────────────────────────┐
 │ STEP 1: Design (2WHAV Planning)        │
@@ -941,7 +944,6 @@ TOTAL SCORE: {TOTAL}/10
 ```
 
 ---
-
 
 ## Case Study: JWT Authentication System
 
