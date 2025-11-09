@@ -140,7 +140,7 @@ graph TD
 This flow MUST be followed to the letter and is intentionally rigid precisely to stimulate the LLM's reasoning, not to speed up by ignoring steps.
 
 ⚠️ **CRITICAL:**
-Each step must be exposed for human verification. Ignoring this is considered a CRITICAL ERROR
+At each iteration, all steps (including planning, analysis, and scoring) must be explicitly documented and presented to the user. Only Before proceeding to the next iteration, explicit confirmation must be obtained from the human.
 
 ```
 ┌─────────────────────────────────────────┐
@@ -954,7 +954,7 @@ Implement production-ready JWT authentication with refresh tokens
 ### Configuration
 
 - Target Score: 10/10
-- Max Iterations: 3
+- Max Iterations: 10
 - Exit Condition: score >= 10
 
 ---
